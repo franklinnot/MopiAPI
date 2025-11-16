@@ -1,0 +1,10 @@
+services:
+  api:
+    build: .
+    image: img-apimopi
+    container_name: cnt-apimopi
+    ports:
+      - "8000:80"
+    volumes:
+      - .:/code
+    restart: unless-stopped
