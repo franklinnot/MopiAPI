@@ -2,7 +2,7 @@ import re
 import requests
 
 #
-from src.domain.classes import AllPlatforms
+from src.domain.enums import AllPlatforms
 from src.application.responses import (
     Respuesta,
     errorResponse,

@@ -2,7 +2,7 @@ from pydantic import BaseModel, Field
 from typing import Optional
 
 #
-from src.domain.classes import (
+from src.domain.enums import (
     AudioPlatforms,
     AudioQuality,
     VideoPlatforms,

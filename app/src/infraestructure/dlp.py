@@ -1,13 +1,13 @@
 import yt_dlp
 from pathlib import Path
-from typing import List, Tuple
+from typing import List, Tuple, Literal
 import os
 
 #
 from core.logger import logger
 from core.settings import settings
 from src.application.utils.utils import utils
-from src.domain.classes import AudioCodecs
+from src.domain.enums import AudioCodecs
 
 
 class DLP:
@@ -150,7 +150,7 @@ class DLP:
         self,
         url: str,
         folder_path: str,
-        file_type: str,
+        file_type: Literal["audio", "video"],
         allowed_exts: List[str],
         codec: str,
         quality: str,

@@ -9,13 +9,12 @@ from core.settings import settings
 from src.presentation.filter_exception import filter_exception
 from src.application.responses import Respuesta
 from src.application.use_cases.get_audio_iframe import UC_GetAudioIframe
-from src.application.use_cases.download_audio import UC_AudioDownload
+from src.application.use_cases.download import UC_Download
 from src.presentation.dtos import (
     DTO_GetAudioIframe,
     DTO_AudioDownload,
     DTO_VideoDownload,
 )
-from src.application.use_cases.download_video import UC_VideoDownload
 
 
 # fastapi dev app/main.py
@@ -69,11 +68,12 @@ async def get_audio_iframe(dto: DTO_GetAudioIframe, request: Request) -> Respues
 @app.post("/download_audio/")
 @limiter.limit("4/minute")
 async def download_audio(dto: DTO_AudioDownload, request: Request):
-    result = await UC_AudioDownload(
+    result = await UC_Download(
         url=dto.url,
         title=dto.title,
         platform=dto.platform.value,
         quality=dto.quality.value,
+        file_type="audio",
     ).execute_parallel()
     return result
 
@@ -81,11 +81,12 @@ async def download_audio(dto: DTO_AudioDownload, request: Request):
 @app.post("/download_video/")
 @limiter.limit("4/minute")
 async def download_video(dto: DTO_VideoDownload, request: Request):
-    result = await UC_VideoDownload(
+    result = await UC_Download(
         url=dto.url,
         title=dto.title,
         platform=dto.platform.value,
         quality=dto.quality.value,
+        file_type="video",
     ).execute_parallel()
     return result
 

@@ -1,7 +1,7 @@
 from typing import List
 
 #
-from src.domain.classes import AllPlatforms
+from src.domain.enums import AllPlatforms
 
 domains_youtube = [
     "youtube.com",

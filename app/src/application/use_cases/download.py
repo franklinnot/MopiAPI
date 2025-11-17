@@ -7,11 +7,17 @@ import asyncio
 #
 from core.settings import settings
 from core.logger import logger
-from src.domain.classes import AllPlatforms
-from src.application.responses import validResponse, errorResponse, Respuesta
-from src.application.responses import RES_FileResponse
+from src.domain.enums import AllPlatforms
+from src.application.responses import (
+    validResponse,
+    errorResponse,
+    Respuesta,
+    RES_FileResponse,
+)
 from src.infraestructure.dlp import dlp
 from src.application.utils.utils import utils
+from src.domain.enums import AudioCodecs, VideoCodecs
+
 
 executor = ThreadPoolExecutor(max_workers=5)
 
@@ -23,25 +29,38 @@ class UC_Download:
         url: str,
         title: Optional[str],
         platform: str,
-        duration_limits: dict,
         quality: str,
-        codec: str,
         file_type: Literal["audio", "video"],
     ):
         self.url = url
         self.title = title
         self.platform = platform
-        self.duration_limits = duration_limits
         self.quality = quality
-        self.codec = codec
-        self.file_type = file_type
+        self.file_type: Literal["audio", "video"] = file_type
+        #
+        self.codec = (
+            VideoCodecs.MP4.value if file_type == "video" else AudioCodecs.MP3.value
+        )
+        self.duration_limits = (
+            {  # calidad de video
+                "480": 16,
+                "720": 12,
+                "1080": 8,
+                "1440": 4,
+            }
+            if file_type == "video"
+            else {  # kbps
+                "128": 16,
+                "192": 12,
+                "256": 8,
+                "320": 4,
+            }
+        )
         #
         self.folder_path: str = ""  # path de la carpeta que alojara el archivo
         self.file_path: str = ""  # path completo: folder + filename.ext
         self.file_name: str = ""  # nombre del archivo
-        self.extension: str = (
-            ""  # extension del archivo (en caso de no coincidir con el codec)
-        )
+        self.extension: str = ""  # extension del archivo
 
     def verify_title(self) -> bool:
         """Valida que el título sea aceptable (sin caracteres prohibidos y con longitud <= 64)."""
