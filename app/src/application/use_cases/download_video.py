@@ -2,8 +2,7 @@ import os
 from typing import Optional
 
 #
-from core.settings import settings
-from src.domain.classes import VideoCodecs, VideoQuality, VideoPlatforms
+from src.domain.classes import VideoCodecs
 from src.application.use_cases.download import UC_Download
 
 
@@ -13,8 +12,8 @@ class UC_VideoDownload(UC_Download):
         self,
         url: str,
         title: Optional[str],
-        platform: VideoPlatforms,
-        quality: VideoQuality,
+        platform: str,
+        quality: str,
     ):
         super().__init__(
             url=url,
@@ -27,30 +26,6 @@ class UC_VideoDownload(UC_Download):
                 "1440": 4,
             },
             quality=quality,
-            codec=VideoCodecs.MP4,
+            codec=VideoCodecs.MP4.value,
+            file_type="video",
         )
-
-    def get_opts_for_download(self) -> dict:
-        outtmpl = os.path.join(self.folder_path, "%(title)s.%(ext)s")
-
-        video_filter = f"bestvideo[height<={self.quality.value}]/bestvideo"
-        audio_filter = "bestaudio/best"
-
-        return {
-            "format": f"{video_filter}+{audio_filter}",
-            "merge_output_format": self.codec.value,
-            "postprocessors": [
-                {
-                    "key": "FFmpegVideoConvertor",
-                    "preferredformat": self.codec.value,
-                }
-            ],
-            "outtmpl": outtmpl,
-            "noplaylist": True,
-            "quiet": True,
-            "no_warnings": False,
-            "ignoreerrors": True,
-            "writethumbnail": False,
-            "writeinfojson": False,
-            "cookiefile": settings.COOKIES_FILE_PATH,
-        }

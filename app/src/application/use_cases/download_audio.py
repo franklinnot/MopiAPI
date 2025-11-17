@@ -1,9 +1,7 @@
-import os
 from typing import Optional
 
 #
-from core.settings import settings
-from src.domain.classes import AudioCodecs, AudioQuality, AudioPlatforms
+from src.domain.classes import AudioCodecs
 from src.application.use_cases.download import UC_Download
 
 
@@ -12,8 +10,8 @@ class UC_AudioDownload(UC_Download):
         self,
         url: str,
         title: Optional[str],
-        platform: AudioPlatforms,
-        quality: AudioQuality,
+        platform: str,
+        quality: str,
     ):
         super().__init__(
             url=url,
@@ -26,39 +24,6 @@ class UC_AudioDownload(UC_Download):
                 "320": 4,
             },
             quality=quality,
-            codec=AudioCodecs.MP3,
+            codec=AudioCodecs.MP3.value,
+            file_type="audio",
         )
-
-    def get_opts_for_download(self) -> dict:
-        outtmpl = os.path.join(self.folder_path, "%(title)s.%(ext)s")
-        postprocessors = ""
-
-        if self.codec.value == AudioCodecs.MP3.value:
-            postprocessors = [
-                {
-                    "key": "FFmpegExtractAudio",
-                    "preferredcodec": self.codec.value,
-                    "preferredquality": self.quality.value,
-                }
-            ]
-        # si son formatos lossless
-        else:
-            postprocessors = [
-                {
-                    "key": "FFmpegExtractAudio",
-                    "preferredcodec": self.codec.value,
-                }
-            ]
-
-        return {
-            "format": "bestaudio/best",
-            "postprocessors": postprocessors,
-            "outtmpl": outtmpl,
-            "noplaylist": True,
-            "quiet": True,
-            "no_warnings": False,
-            "ignoreerrors": True,
-            "writethumbnail": False,
-            "writeinfojson": False,
-            "cookiefile": settings.COOKIES_FILE_PATH,
-        }
